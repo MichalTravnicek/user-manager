@@ -9,6 +9,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import com.example.usermanager.model.User;
+import com.example.usermanager.persistence.exception.NotFoundException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @JdbcTest
@@ -26,6 +29,20 @@ public class UsersDaoTest {
         Assertions.assertThat(user).isNotNull();
         Assertions.assertThat(user).extracting(User::getId).isEqualTo(1L);
         Assertions.assertThat(user).extracting(User::getFirstName).isEqualTo("Josh");
+    }
+
+    @Test
+    public void shouldThrowNotFound() {
+        assertThrows(NotFoundException.class, () -> usersDao.getOne(1234));
+    }
+
+    @Test
+    public void shouldDeleteUser() {
+        final User user = usersDao.getOne(1);
+        Assertions.assertThat(user).isNotNull();
+        final int result = usersDao.deleteOne(user);
+        Assertions.assertThat(result).isEqualTo(1);
+        assertThrows(Exception.class, () -> usersDao.getOne(1));
     }
 
     @Test

@@ -2,10 +2,12 @@ package com.example.usermanager.persistence;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.example.usermanager.model.User;
+import com.example.usermanager.persistence.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -16,7 +18,11 @@ public class UsersDaoImpl implements UsersDao {
 
     @Override
     public User getOne(long id){
-        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id= ?", new UsersRowMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id= ?", new UsersRowMapper(), id);
+        }catch (EmptyResultDataAccessException ex){
+            throw new NotFoundException(ex);
+        }
     }
 
     @Override
@@ -31,7 +37,7 @@ public class UsersDaoImpl implements UsersDao {
 
     @Override
     public int deleteOne(User user){
-        throw new UnsupportedOperationException();
+        return jdbcTemplate.update("DELETE FROM USERS WHERE id= ?", user.getId());
     }
 
     @Override
