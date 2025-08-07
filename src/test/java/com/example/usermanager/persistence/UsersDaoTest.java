@@ -60,6 +60,13 @@ public class UsersDaoTest {
     }
 
     @Test
+    public void shouldCountUsers() {
+        final Long count = usersDao.count();
+        Assertions.assertThat(count).isNotNull();
+        Assertions.assertThat(count).isGreaterThan(0);
+    }
+
+    @Test
     public void shouldDeleteUser() {
         final User user = usersDao.getOne(1);
         Assertions.assertThat(user).isNotNull();

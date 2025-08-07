@@ -14,4 +14,6 @@ public interface UsersDao {
     int deleteOne(User user);
 
     List<User> getAll();
+
+    Long count();
 }

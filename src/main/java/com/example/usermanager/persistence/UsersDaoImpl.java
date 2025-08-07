@@ -2,7 +2,9 @@ package com.example.usermanager.persistence;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,13 +34,17 @@ public class UsersDaoImpl implements UsersDao {
     @Override
     public User createOne(User user){
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
+        final Map<String, Object> stringObjectMap = new UsersRowMapper().mapToDatabase(user);
+        final String columns = String.join(",", stringObjectMap.keySet());
+        List<Object> values = new ArrayList<>(stringObjectMap.values().stream().toList());
+        String placeholders = columns.replaceAll("\\w+","?");
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection
-                    .prepareStatement("INSERT INTO USERS (FIRST_NAME, LAST_NAME) VALUES (?, ?)",
+                    .prepareStatement("INSERT INTO USERS (" + columns + ") VALUES (" + placeholders + ")",
                             Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
+            for (int i = 1; i <= values.size(); i++) {
+                ps.setObject(i, values.get(i-1));
+            }
             return ps;
         }, keyHolder);
 
@@ -49,8 +55,11 @@ public class UsersDaoImpl implements UsersDao {
 
     @Override
     public int updateOne(User user){
-        return jdbcTemplate.update("UPDATE USERS SET FIRST_NAME=?,LAST_NAME=? WHERE id= ?",
-                user.getFirstName(), user.getLastName(), user.getId());
+        final Map<String, Object> stringObjectMap = new UsersRowMapper().mapToDatabase(user);
+        final String columns = String.join("=?,", stringObjectMap.keySet()) + "=?";
+        List<Object> values = new ArrayList<>(stringObjectMap.values().stream().toList());
+        values.add(user.getId());
+        return jdbcTemplate.update("UPDATE USERS SET " + columns + " WHERE id=?", values.toArray());
     }
 
     @Override
@@ -62,4 +71,10 @@ public class UsersDaoImpl implements UsersDao {
     public List<User> getAll() {
         return jdbcTemplate.query("SELECT * FROM USERS", new UsersRowMapper());
     }
+
+    @Override
+    public Long count() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS", Long.class);
+    }
+
 }
