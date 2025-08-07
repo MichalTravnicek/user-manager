@@ -1,8 +1,10 @@
 package com.example.usermanager.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode
 public class User {
 
     private long id;

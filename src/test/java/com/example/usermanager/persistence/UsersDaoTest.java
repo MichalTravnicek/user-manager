@@ -37,6 +37,29 @@ public class UsersDaoTest {
     }
 
     @Test
+    public void shouldCreateUser() {
+        User user = new User();
+        user.setFirstName("Pavel");
+        user.setLastName("Urbanek");
+        final User createdUser = usersDao.createOne(user);
+        Assertions.assertThat(createdUser).isNotNull();
+        Assertions.assertThat(createdUser.getId()).isGreaterThan(0);
+        final User userFound = usersDao.getOne(user.getId());
+        Assertions.assertThat(userFound).isEqualTo(user);
+    }
+
+    @Test
+    public void shouldUpdateUser() {
+        final User user = usersDao.getOne(1);
+        user.setFirstName("Michal");
+        user.setLastName("Trava");
+        final int result = usersDao.updateOne(user);
+        Assertions.assertThat(result).isEqualTo(1);
+        final User userFound = usersDao.getOne(1);
+        Assertions.assertThat(userFound).isEqualTo(user);
+    }
+
+    @Test
     public void shouldDeleteUser() {
         final User user = usersDao.getOne(1);
         Assertions.assertThat(user).isNotNull();

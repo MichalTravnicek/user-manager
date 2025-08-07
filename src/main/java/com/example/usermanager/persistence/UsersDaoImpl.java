@@ -1,9 +1,13 @@
 package com.example.usermanager.persistence;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.usermanager.model.User;
@@ -27,12 +31,26 @@ public class UsersDaoImpl implements UsersDao {
 
     @Override
     public User createOne(User user){
-       throw new UnsupportedOperationException();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement("INSERT INTO USERS (FIRST_NAME, LAST_NAME) VALUES (?, ?)",
+                            Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            return ps;
+        }, keyHolder);
+
+        long id = keyHolder.getKey().longValue();
+        user.setId(id);
+        return user;
     }
 
     @Override
     public int updateOne(User user){
-        throw new UnsupportedOperationException();
+        return jdbcTemplate.update("UPDATE USERS SET FIRST_NAME=?,LAST_NAME=? WHERE id= ?",
+                user.getFirstName(), user.getLastName(), user.getId());
     }
 
     @Override
