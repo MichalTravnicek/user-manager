@@ -50,6 +50,12 @@
 			<artifactId>flyway-core</artifactId>
 			<version>9.5.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.7</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
