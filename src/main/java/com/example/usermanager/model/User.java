@@ -15,9 +15,9 @@ public class User {
     @Column("ID")
     private Long id = 0L;
     @Column("FIRST_NAME")
-    private String firstName = "";
+    private String firstName;
     @Column("LAST_NAME")
-    private String lastName = "";
+    private String lastName;
     @Column("BIRTH_DATE")
     private Date birthDate;
     @Column("REGISTERED_DATE")
