@@ -1,5 +1,6 @@
 package com.example.usermanager.persistence;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -37,13 +38,17 @@ public class UsersDaoTest {
     }
 
     @Test
-    public void shouldCreateUser() {
+    public void shouldCreateUser() throws ParseException {
         User user = new User();
         user.setFirstName("Pavel");
         user.setLastName("Urbanek");
+        user.setBirthDate(User.dateFormatter.parse("2007-09-07"));
         final User createdUser = usersDao.createOne(user);
         Assertions.assertThat(createdUser).isNotNull();
+        Assertions.assertThat(createdUser.getId()).isNotNull();
         Assertions.assertThat(createdUser.getId()).isGreaterThan(0);
+        Assertions.assertThat(createdUser).extracting(User::getBirthDate).isNotNull();
+        Assertions.assertThat(createdUser).extracting(User::getRegisteredDate).isNotNull();
         final User userFound = usersDao.getOne(user.getId());
         Assertions.assertThat(userFound).isEqualTo(user);
     }

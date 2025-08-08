@@ -1,0 +1,1 @@
+INSERT INTO users(first_name, last_name,registered_date) VALUES ('Josh','Bloch','2024-05-07')
