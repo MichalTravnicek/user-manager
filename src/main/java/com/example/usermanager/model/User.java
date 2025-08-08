@@ -14,10 +14,14 @@ public class User {
     @Id
     @Column("ID")
     private Long id = 0L;
+    @Column("NAME")
+    private String name;
     @Column("FIRST_NAME")
-    private String firstName = "";
+    private String firstName;
     @Column("LAST_NAME")
-    private String lastName = "";
+    private String lastName;
+    @Column("EMAIL")
+    private String email;
     @Column("BIRTH_DATE")
     private Date birthDate;
     @Column("REGISTERED_DATE")
