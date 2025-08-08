@@ -1,5 +1,6 @@
 package com.example.usermanager.service;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,7 @@ import com.example.usermanager.model.rest.UserJson;
 class UserServiceTest {
 
     @Autowired
-    UserService userService;
+    IUserService userService;
 
     @Test
     public void shouldCreateUser() {
@@ -36,6 +37,27 @@ class UserServiceTest {
         Assertions.assertThat(userJson).extracting(UserJson::getLastName).isEqualTo("Bloch");
         Assertions.assertThat(userJson).extracting(UserJson::getBirthDate).isEqualTo("1970-08-25");
         Assertions.assertThat(userJson).extracting(UserJson::getRegisteredOn).isEqualTo("2024-05-07");
+    }
+
+    @Test
+    public void shouldGetAllUsers() {
+        final List<UserJson> allUsers = userService.getAllUsers();
+        Assertions.assertThat(allUsers).isNotNull();
+        Assertions.assertThat(allUsers).isNotEmpty();
+        for (final UserJson user : allUsers) {
+            Assertions.assertThat(user.getName()).isNotEmpty();
+            Assertions.assertThat(user.getFirstName()).isNotEmpty();
+            Assertions.assertThat(user.getLastName()).isNotEmpty();
+            Assertions.assertThat(user.getEmailAddress()).isNotEmpty();
+            Assertions.assertThat(user.getBirthDate()).isNotEmpty();
+            Assertions.assertThat(user.getRegisteredOn()).isNotEmpty();
+        }
+        var user = allUsers.stream().filter(x->x.getName().equals("jbloch")).findFirst().orElseGet(UserJson::new);
+        Assertions.assertThat(user).extracting(UserJson::getEmailAddress).isEqualTo("josh@email.com");
+        Assertions.assertThat(user).extracting(UserJson::getFirstName).isEqualTo("Josh");
+        Assertions.assertThat(user).extracting(UserJson::getLastName).isEqualTo("Bloch");
+        Assertions.assertThat(user).extracting(UserJson::getBirthDate).isEqualTo("1970-08-25");
+        Assertions.assertThat(user).extracting(UserJson::getRegisteredOn).isEqualTo("2024-05-07");
     }
 
 }

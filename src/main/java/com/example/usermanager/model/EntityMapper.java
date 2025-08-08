@@ -1,5 +1,7 @@
 package com.example.usermanager.model;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -19,4 +21,7 @@ public interface EntityMapper {
     @Mapping(target = "birthDate", source = "birthDate", dateFormat = "yyyy-MM-dd")
     @Mapping(target = "registeredOn", source = "registeredDate", dateFormat = "yyyy-MM-dd")
     UserJson userToUserJson(User dto);
+
+    List<UserJson> mapToJson(List<User> users);
+    List<User> mapToEntity(List<UserJson> employees);
 }
