@@ -1,1 +1,2 @@
-INSERT INTO users(first_name, last_name,registered_date) VALUES ('Josh','Bloch','2024-05-07')
+INSERT INTO users(name, first_name, last_name, email, registered_date)
+VALUES ('jbloch','Josh','Bloch','josh@email.com', '2024-05-07')

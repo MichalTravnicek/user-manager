@@ -40,8 +40,10 @@ public class UsersDaoTest {
     @Test
     public void shouldCreateUser() throws ParseException {
         User user = new User();
+        user.setName("purban");
         user.setFirstName("Pavel");
         user.setLastName("Urbanek");
+        user.setEmail("pavel@seznam.cz");
         user.setBirthDate(User.dateFormatter.parse("2007-09-07"));
         final User createdUser = usersDao.createOne(user);
         Assertions.assertThat(createdUser).isNotNull();

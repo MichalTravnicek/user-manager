@@ -1,2 +1,0 @@
---INSERT INTO users(first_name, last_name) VALUES ('Josh','Bloch')
--- MOVED TO V4
