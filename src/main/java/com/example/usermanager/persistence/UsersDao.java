@@ -7,6 +7,8 @@ import com.example.usermanager.model.User;
 public interface UsersDao {
     User getOne(long id);
 
+    User getOneByEmail(String email);
+
     User createOne(User user);
 
     int updateOne(User user);

@@ -33,6 +33,11 @@ public class UsersDaoImpl implements UsersDao {
     }
 
     @Override
+    public User getOneByEmail(final String email) {
+        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE email= ?", new UsersRowMapper(), email);
+    }
+
+    @Override
     public User createOne(User user){
         KeyHolder keyHolder = new GeneratedKeyHolder();
         final Map<String, Object> stringObjectMap = new UsersRowMapper().mapToDatabase(user);

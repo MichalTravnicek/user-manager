@@ -33,6 +33,14 @@ public class UsersDaoTest {
     }
 
     @Test
+    public void shouldGetUserByEmail() {
+        final User user = usersDao.getOneByEmail("josh@email.com");
+        System.out.println(user);
+        Assertions.assertThat(user).isNotNull();
+        Assertions.assertThat(user).extracting(User::getFirstName).isEqualTo("Josh");
+    }
+
+    @Test
     public void shouldThrowNotFound() {
         assertThrows(NotFoundException.class, () -> usersDao.getOne(1234));
     }
