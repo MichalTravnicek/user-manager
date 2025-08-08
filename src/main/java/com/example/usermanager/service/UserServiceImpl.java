@@ -31,7 +31,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean updateUser(UserJson userJson){
-		throw new UnsupportedOperationException();
+		User user = EntityMapper.INSTANCE.userJsonToUser(userJson);
+		int result = usersDao.updateOne(user);
+		return result > 0;
 	}
 
 	@Override

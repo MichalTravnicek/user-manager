@@ -31,6 +31,18 @@ class UserServiceTest {
     }
 
     @Test
+    public void shouldUpdateUser() {
+        final UserJson user = userService.getUser("josh@email.com");
+        user.setFirstName("Petr");
+        user.setLastName("Vanek");
+        final boolean result = userService.updateUser(user);
+        Assertions.assertThat(result).isTrue();
+        final UserJson userModified = userService.getUser("josh@email.com");
+        Assertions.assertThat(userModified).extracting(UserJson::getFirstName).isEqualTo("Petr");
+        Assertions.assertThat(userModified).extracting(UserJson::getLastName).isEqualTo("Vanek");
+    }
+
+    @Test
     public void shouldDeleteUser() {
         final boolean result = userService.deleteUser("josh@email.com");
         Assertions.assertThat(result).isTrue();
