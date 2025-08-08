@@ -75,6 +75,15 @@ public class UsersDaoTest {
     }
 
     @Test
+    public void shouldDeleteByEmail() {
+        final User user = usersDao.getOne(1);
+        Assertions.assertThat(user).isNotNull();
+        final int result = usersDao.deleteOne(user.getEmail());
+        Assertions.assertThat(result).isEqualTo(1);
+        assertThrows(Exception.class, () -> usersDao.getOne(1));
+    }
+
+    @Test
     public void shouldCountUsers() {
         final Long count = usersDao.count();
         Assertions.assertThat(count).isNotNull();

@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.usermanager.model.User;
 
 public interface UsersDao {
+
     User getOne(long id);
 
     User getOneByEmail(String email);
@@ -14,6 +15,8 @@ public interface UsersDao {
     int updateOne(User user);
 
     int deleteOne(User user);
+
+    int deleteOne(String email);
 
     List<User> getAll();
 

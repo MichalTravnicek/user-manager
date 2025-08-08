@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.example.usermanager.model.rest.UserJson;
 
-public interface IUserService {
+public interface UserService {
 
     boolean createUser(UserJson userJson);
 

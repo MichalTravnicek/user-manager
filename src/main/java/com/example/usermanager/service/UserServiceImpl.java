@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
 	private final UsersDao usersDao;
 
@@ -36,7 +36,8 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public boolean deleteUser(String email){
-		throw new UnsupportedOperationException();
+		int result = usersDao.deleteOne(email);
+		return result > 0;
 	}
 
 	@Override

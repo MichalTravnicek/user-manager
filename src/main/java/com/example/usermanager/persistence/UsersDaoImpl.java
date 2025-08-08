@@ -34,7 +34,11 @@ public class UsersDaoImpl implements UsersDao {
 
     @Override
     public User getOneByEmail(final String email) {
-        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE email= ?", new UsersRowMapper(), email);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE email= ?", new UsersRowMapper(), email);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(e);
+        }
     }
 
     @Override
@@ -69,13 +73,18 @@ public class UsersDaoImpl implements UsersDao {
         final Map<String, Object> stringObjectMap = UsersRowMapper.mapToDatabase(user);
         final String columns = String.join("=?,", stringObjectMap.keySet()) + "=?";
         List<Object> values = new ArrayList<>(stringObjectMap.values().stream().toList());
-        values.add(user.getId());
-        return jdbcTemplate.update("UPDATE USERS SET " + columns + " WHERE id=?", values.toArray());
+        values.add(user.getEmail());
+        return jdbcTemplate.update("UPDATE USERS SET " + columns + " WHERE email=?", values.toArray());
     }
 
     @Override
     public int deleteOne(User user){
         return jdbcTemplate.update("DELETE FROM USERS WHERE id= ?", user.getId());
+    }
+
+    @Override
+    public int deleteOne(String email){
+        return jdbcTemplate.update("DELETE FROM USERS WHERE email= ?", email);
     }
 
     @Override

@@ -11,13 +11,16 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import com.example.usermanager.model.rest.UserJson;
+import com.example.usermanager.persistence.exception.NotFoundException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 class UserServiceTest {
 
     @Autowired
-    IUserService userService;
+    UserService userService;
 
     @Test
     public void shouldCreateUser() {
@@ -25,6 +28,18 @@ class UserServiceTest {
                 "mail@mail.com","1950-09-03", null);
         final boolean result = userService.createUser(userJson);
         Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldDeleteUser() {
+        final boolean result = userService.deleteUser("josh@email.com");
+        Assertions.assertThat(result).isTrue();
+        assertThrows(Exception.class, ()-> userService.getUser("josh@email.com"));
+    }
+
+    @Test
+    public void shouldThrowWhenNotFound() {
+        assertThrows(NotFoundException.class,() -> userService.getUser("xxx@email.com"));
     }
 
     @Test
