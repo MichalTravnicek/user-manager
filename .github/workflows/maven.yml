@@ -22,7 +22,7 @@ jobs:
         postgres_db:
           image: postgres:17.5
           env:
-            POSTGRES_USER: postgres
+            POSTGRES_USER: usermanager
             POSTGRES_PASSWORD: password
             POSTGRES_DB: test
           ports:
