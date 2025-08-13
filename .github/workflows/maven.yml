@@ -19,7 +19,7 @@ jobs:
 
     runs-on: ubuntu-latest
     services:
-        postgres_db:
+      usermanager-db:
           image: postgres:17.5
           env:
             POSTGRES_USER: usermanager
