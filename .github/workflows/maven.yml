@@ -38,7 +38,5 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Add network alias
-      run: sudo echo "127.0.0.1 usermanager-db" >> /etc/hosts
     - name: Build with Maven
       run: mvn -B package --file pom.xml
