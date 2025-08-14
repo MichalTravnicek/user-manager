@@ -1,0 +1,31 @@
+services:
+  spring-build:
+    build:
+      no_cache: true
+      context: ../../
+      dockerfile: ./docker/application/Dockerfile
+    command: bin/sh -c "if ! [ -f "/home/app.jar" ]; then mvn -f /home/app/pom.xml clean package -Dspring.profiles.active=docker &&
+             cp /home/app/target/*.jar /home/app.jar && rm -r /home/app; fi"
+    networks:
+      - postgres-net
+    volumes:
+      - build-volume:/home
+  spring:
+    image: openjdk:21-slim
+    entrypoint: java -jar -Dspring.profiles.active=docker /home/app.jar
+    ports:
+      - 8080:8080
+    networks:
+      - postgres-net
+    volumes:
+      - build-volume:/home
+    depends_on:
+      spring-build:
+        condition: service_completed_successfully
+
+volumes:
+  build-volume:
+
+networks:
+  postgres-net:
+    external: true

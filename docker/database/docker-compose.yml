@@ -1,0 +1,31 @@
+services:
+  usermanager-db:
+    container_name: usermanager-postgres
+    image: postgres:17
+    volumes:
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: usermanager,test
+      POSTGRES_USER: usermanager
+      POSTGRES_PASSWORD: password
+    networks:
+      - postgres-net
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U usermanager -d usermanager" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+volumes:
+  postgres-data:
+    name: postgres-app-data
+
+networks:
+  default:
+    name: none
+  postgres-net:
+    name: postgres-net
