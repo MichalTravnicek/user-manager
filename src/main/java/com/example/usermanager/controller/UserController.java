@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -145,6 +146,35 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
+    }
+
+    @Operation(tags = "4 - Delete",
+            summary = "Delete user",
+            description = "Deletes user by id"
+    )
+    @DeleteMapping("/user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User deleted", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
+
+    })
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(examples = {
+                    @ExampleObject(name = "Existing user UUID", description = "Deletes Josh user", value = "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381"),
+                    @ExampleObject(name = "Nonexistent user UUID", description = "Results in 404 NotFound", value = "b1b44b12-34bc-4ed7-a666-9657b8b8c31b"),
+                    @ExampleObject(name = "Invalid UUID", description = "Results in 400 BadRequest", value = "b1b44b12-34bc")
+            }
+            )
+            @RequestParam @org.hibernate.validator.constraints.UUID String uuid
+    ){
+        UUID uuidObj = UUID.fromString(uuid);
+        final boolean deleted = userService.deleteUserById(uuidObj);
+        if (deleted) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
 }

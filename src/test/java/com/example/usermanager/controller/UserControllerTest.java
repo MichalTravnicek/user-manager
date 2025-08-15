@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.usermanager.controller.UserController.BASE_URL;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -236,6 +237,63 @@ public class UserControllerTest {
                           "registeredOn": "2022-05-07"
                         }
                         """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailUpdateUser3() throws Exception { //nonexistent uuid
+        this.mockMvc.perform(put(BASE_URL + "/user").content("""
+                        {
+                          "uuid" : "8ffe0a11-b6cc-4dbe-80af-ad0775010de1",
+                          "name": "pzdepa",
+                          "firstName": "Pepa",
+                          "lastName": "ZDepa",
+                          "emailAddress": "jrotten@email.com",
+                          "birthDate": "1970-08-25",
+                          "registeredOn": "2022-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldDeleteUser() throws Exception {
+        this.mockMvc.perform(delete(BASE_URL + "/user").param("uuid", "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isNoContent())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailDeleteUser() throws Exception { //nonexistent UUID
+        this.mockMvc.perform(delete(BASE_URL + "/user").param("uuid", "8ffe0a11-b6cc-4dbe-80af-ad0775010de1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isNotFound())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailDeleteUser2() throws Exception { //bad UUID
+        this.mockMvc.perform(delete(BASE_URL + "/user").param("uuid", "deccc52a-4c7d-4f0c-9ba9")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
                 .andDo(mvcResult -> {
                     String json = mvcResult.getResponse().getContentAsString();
                     System.out.println(json);
