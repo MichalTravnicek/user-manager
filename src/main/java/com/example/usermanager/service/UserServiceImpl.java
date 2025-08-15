@@ -1,6 +1,9 @@
 package com.example.usermanager.service;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public UserJson getUserById(UUID uuid){
+		User user = usersDao.getOneByUuid(uuid);
+		Logger.getLogger(this.toString()).log(Level.INFO,"Get:" + user);
+		return EntityMapper.INSTANCE.userToUserJson(user);
+	}
+
+	@Override
 	public boolean updateUser(UserJson userJson){
 		User user = EntityMapper.INSTANCE.userJsonToUser(userJson);
 		int result = usersDao.updateOne(user);
@@ -39,6 +49,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean deleteUser(String email){
 		int result = usersDao.deleteOne(email);
+		return result > 0;
+	}
+
+	@Override
+	public boolean deleteUserById(final UUID uuid) {
+		int result = usersDao.deleteOneById(uuid);
 		return result > 0;
 	}
 

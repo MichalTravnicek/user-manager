@@ -3,6 +3,7 @@ package com.example.usermanager.model;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,9 @@ public class User {
     @Id
     @Column("ID")
     private Long id = 0L;
+    @Id
+    @Column("UUID")
+    private UUID uuid;
     @Column("NAME")
     private String name;
     @Column("FIRST_NAME")

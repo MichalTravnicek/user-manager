@@ -1,6 +1,7 @@
 package com.example.usermanager.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,8 +51,21 @@ class UserServiceTest {
     }
 
     @Test
+    public void shouldDeleteUserById() {
+        final boolean result = userService.deleteUserById(UUID.fromString("deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381"));
+        Assertions.assertThat(result).isTrue();
+        assertThrows(Exception.class, ()-> userService.getUserById(UUID.fromString("deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381")));
+    }
+
+    @Test
     public void shouldThrowWhenNotFound() {
         assertThrows(NotFoundException.class,() -> userService.getUser("xxx@email.com"));
+    }
+
+    @Test
+    public void shouldThrowWhenNotFoundById() {
+        assertThrows(NotFoundException.class,() -> userService.getUserById(
+                UUID.fromString("b1b44b12-34bc-4ed7-a666-9657b8b8c31b")));
     }
 
     @Test
@@ -62,6 +76,19 @@ class UserServiceTest {
         Assertions.assertThat(userJson).extracting(UserJson::getName).isEqualTo("jbloch");
         Assertions.assertThat(userJson).extracting(UserJson::getFirstName).isEqualTo("Josh");
         Assertions.assertThat(userJson).extracting(UserJson::getLastName).isEqualTo("Bloch");
+        Assertions.assertThat(userJson).extracting(UserJson::getBirthDate).isEqualTo("1970-08-25");
+        Assertions.assertThat(userJson).extracting(UserJson::getRegisteredOn).isEqualTo("2024-05-07");
+    }
+
+    @Test
+    public void shouldGetUserById() {
+        UserJson userJson = userService.getUserById(UUID.fromString("deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381"));
+        Logger.getLogger(UserServiceTest.class.getName()).log(Level.INFO, userJson.toString());
+        Assertions.assertThat(userJson).isNotNull();
+        Assertions.assertThat(userJson).extracting(UserJson::getName).isEqualTo("jbloch");
+        Assertions.assertThat(userJson).extracting(UserJson::getFirstName).isEqualTo("Josh");
+        Assertions.assertThat(userJson).extracting(UserJson::getLastName).isEqualTo("Bloch");
+        Assertions.assertThat(userJson).extracting(UserJson::getEmailAddress).isEqualTo("josh@email.com");
         Assertions.assertThat(userJson).extracting(UserJson::getBirthDate).isEqualTo("1970-08-25");
         Assertions.assertThat(userJson).extracting(UserJson::getRegisteredOn).isEqualTo("2024-05-07");
     }

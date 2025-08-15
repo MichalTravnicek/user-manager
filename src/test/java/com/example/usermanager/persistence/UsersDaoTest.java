@@ -2,6 +2,7 @@ package com.example.usermanager.persistence;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,20 @@ public class UsersDaoTest {
         System.out.println(user);
         Assertions.assertThat(user).isNotNull();
         Assertions.assertThat(user).extracting(User::getFirstName).isEqualTo("Josh");
+    }
+
+    @Test
+    public void shouldGetUserByUuid() {
+        final User user = usersDao.getOneByUuid(UUID.fromString("deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381"));
+        System.out.println(user);
+        Assertions.assertThat(user).isNotNull();
+        Assertions.assertThat(user).extracting(User::getFirstName).isEqualTo("Josh");
+    }
+
+    @Test
+    public void shouldFailGetUserByUuid() {
+        assertThrows(NotFoundException.class, () -> usersDao.getOneByUuid(
+                UUID.fromString("b1b44b12-34bc-4ed7-a666-9657b8b8c31b")));
     }
 
     @Test
@@ -97,6 +112,21 @@ public class UsersDaoTest {
         final int result = usersDao.deleteOne(user);
         Assertions.assertThat(result).isEqualTo(1);
         assertThrows(Exception.class, () -> usersDao.getOne(1));
+    }
+
+    @Test
+    public void shouldDeleteUserById() {
+        final User user = usersDao.getOne(1);
+        Assertions.assertThat(user).isNotNull();
+        final int result = usersDao.deleteOneById(user.getUuid());
+        Assertions.assertThat(result).isEqualTo(1);
+        assertThrows(Exception.class, () -> usersDao.getOne(1));
+    }
+
+    @Test
+    public void shouldFailDeleteUserById() {
+        final int result = usersDao.deleteOneById(UUID.fromString("b1b44b12-34bc-4ed7-a666-9657b8b8c31b"));
+        Assertions.assertThat(result).isEqualTo(0);
     }
 
     @Test

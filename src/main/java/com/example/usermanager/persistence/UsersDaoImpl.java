@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,9 +43,18 @@ public class UsersDaoImpl implements UsersDao {
     }
 
     @Override
+    public User getOneByUuid(final UUID uuid) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE uuid= ?", new UsersRowMapper(), uuid);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException(ex);
+        }
+    }
+
+    @Override
     public User createOne(User user){
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        final Map<String, Object> stringObjectMap = new UsersRowMapper().mapToDatabase(user);
+        final Map<String, Object> stringObjectMap = UsersRowMapper.mapToDatabase(user);
         final String columns = String.join(",", stringObjectMap.keySet());
         List<Object> values = new ArrayList<>(stringObjectMap.values().stream().toList());
         String placeholders = columns.replaceAll("\\w+","?");
@@ -85,6 +95,11 @@ public class UsersDaoImpl implements UsersDao {
     @Override
     public int deleteOne(String email){
         return jdbcTemplate.update("DELETE FROM USERS WHERE email= ?", email);
+    }
+
+    @Override
+    public int deleteOneById(UUID uuid){
+        return jdbcTemplate.update("DELETE FROM USERS WHERE uuid= ?", uuid);
     }
 
     @Override
