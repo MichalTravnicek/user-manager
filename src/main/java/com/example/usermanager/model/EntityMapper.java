@@ -13,13 +13,13 @@ public interface EntityMapper {
     EntityMapper INSTANCE = Mappers.getMapper(EntityMapper.class);
 
     @Mapping(target = "email", source = "emailAddress")
-    @Mapping(target = "birthDate", source = "birthDate", dateFormat = "yyyy-MM-dd")
-    @Mapping(target = "registeredDate", source = "registeredOn", dateFormat = "yyyy-MM-dd")
+    @Mapping(target = "birthDate", source = "birthDate", dateFormat = User.DATE_FORMAT)
+    @Mapping(target = "registeredDate", source = "registeredOn", dateFormat = User.DATE_FORMAT)
     User userJsonToUser(UserJson entity);
 
     @Mapping(target = "emailAddress", source = "email")
-    @Mapping(target = "birthDate", source = "birthDate", dateFormat = "yyyy-MM-dd")
-    @Mapping(target = "registeredOn", source = "registeredDate", dateFormat = "yyyy-MM-dd")
+    @Mapping(target = "birthDate", source = "birthDate", dateFormat = UserJson.DATE_FORMAT)
+    @Mapping(target = "registeredOn", source = "registeredDate", dateFormat = UserJson.DATE_FORMAT)
     UserJson userToUserJson(User dto);
 
     List<UserJson> mapToJson(List<User> users);

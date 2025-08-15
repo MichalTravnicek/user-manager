@@ -20,10 +20,10 @@ public class UserServiceImpl implements UserService {
 	private final UsersDao usersDao;
 
 	@Override
-	public boolean createUser(UserJson userJson){
+	public UserJson createUser(UserJson userJson){
 		User user = EntityMapper.INSTANCE.userJsonToUser(userJson);
 		final User createdUser = usersDao.createOne(user);
-		return createdUser.getId() > 0;
+		return EntityMapper.INSTANCE.userToUserJson(createdUser);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import com.example.usermanager.model.rest.UserJson;
 
 public interface UserService {
 
-    boolean createUser(UserJson userJson);
+    UserJson createUser(UserJson userJson);
 
     @Deprecated
     UserJson getUser(String email);

@@ -3,9 +3,12 @@ package com.example.usermanager.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -46,6 +50,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User found",
                     content = @Content(schema = @Schema(example = """
                             {
+                              "uuid": "b1b44b12-34bc-4ed7-a666-9657b8b8c31b",
                               "name": "mtrava",
                               "firstName": "Michal",
                               "lastName": "Trava",
@@ -71,5 +76,42 @@ public class UserController {
         UUID uuidObj = UUID.fromString(uuid);
         return ResponseEntity.ok(userService.getUserById(uuidObj));
     }
-}
 
+    @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(tags = "2 - Create",
+            summary = "Create user",
+            description = "Creates user from supplied values"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created",
+                    content = @Content(schema = @Schema(example = """
+                            {
+                              "uuid": "b1b44b12-34bc-4ed7-a666-9657b8b8c31b",
+                              "name": "mtrava",
+                              "firstName": "Michal",
+                              "lastName": "Trava",
+                              "emailAddress": "trava@seznam.cz",
+                              "birthDate": "1972-08-25",
+                              "registeredOn": "2025-05-07"
+                            }
+                            """))),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflict with existing user", content = @Content)
+    })
+    public ResponseEntity<UserJson> createUser(
+            @Schema(implementation = UserJson.class, example = """
+                            {
+                              "name": "mtrava",
+                              "firstName": "Michal",
+                              "lastName": "Trava",
+                              "emailAddress": "trava@seznam.cz",
+                              "birthDate": "1972-08-25",
+                              "registeredOn": "2025-05-07"
+                            }
+                            """)
+            @RequestBody @Valid UserJson user) {
+        final UserJson createdUser = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+}

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import static com.example.usermanager.controller.UserController.BASE_URL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.usermanager.model.rest.UserJson;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,6 +34,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     UserJson testUser = UserJson.builder()
+            .uuid("deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381")
             .name("jbloch")
             .firstName("Josh")
             .lastName("Bloch")
@@ -88,6 +92,86 @@ public class UserControllerTest {
     public void shouldFailGetOneUser2() throws Exception {
         this.mockMvc.perform(get(BASE_URL + "/user").param("uuid",
                         "b1b44b12-34bc-4ed7-a666-9657b8b8c31b")).andDo(print()).andExpect(status().isNotFound())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldCreateUser() throws Exception {
+        this.mockMvc.perform(post(BASE_URL + "/user").content("""
+                        {
+                          "name": "mtrava",
+                          "firstName": "Michal",
+                          "lastName": "Trava",
+                          "emailAddress": "trava@seznam.cz",
+                          "birthDate": "1972-08-25",
+                          "registeredOn": "2025-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isCreated())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailCreateUser() throws Exception { //already exists
+        this.mockMvc.perform(post(BASE_URL + "/user").content("""
+                        {
+                          "name": "jbloch",
+                          "firstName": "Josh",
+                          "lastName": "Twin",
+                          "emailAddress": "twin@mail.com",
+                          "birthDate": "1970-08-25",
+                          "registeredOn": "2022-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isConflict())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailCreateUser2() throws Exception { //name too long
+        this.mockMvc.perform(post(BASE_URL + "/user").content("""
+                        {
+                          "name": "string_too_long",
+                          "firstName": "Pepa",
+                          "lastName": "ZDepa",
+                          "emailAddress": "pepa@mail.com",
+                          "birthDate": "1970-08-25",
+                          "registeredOn": "2022-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailCreateUser3() throws Exception { //bad date format
+        this.mockMvc.perform(post(BASE_URL + "/user").content("""
+                        {
+                          "name": "pzdepa",
+                          "firstName": "Pepa",
+                          "lastName": "ZDepa",
+                          "emailAddress": "pepa@mail.com",
+                          "birthDate": "08-25-1970",
+                          "registeredOn": "05-07-2022"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
                 .andDo(mvcResult -> {
                     String json = mvcResult.getResponse().getContentAsString();
                     System.out.println(json);

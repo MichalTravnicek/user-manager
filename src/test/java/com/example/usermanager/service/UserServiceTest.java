@@ -25,10 +25,17 @@ class UserServiceTest {
 
     @Test
     public void shouldCreateUser() {
-        UserJson userJson = new UserJson("jtluka","Jan","Tluka",
+        UserJson userJson = new UserJson(null, "jtluka","Jan","Tluka",
                 "mail@mail.com","1950-09-03", null);
-        final boolean result = userService.createUser(userJson);
-        Assertions.assertThat(result).isTrue();
+        final UserJson user = userService.createUser(userJson);
+        Assertions.assertThat(user).isNotNull();
+        Assertions.assertThat(user.getUuid()).isNotBlank();
+        Assertions.assertThat(user.getName()).isEqualTo("jtluka");
+        Assertions.assertThat(user.getFirstName()).isEqualTo("Jan");
+        Assertions.assertThat(user.getLastName()).isEqualTo("Tluka");
+        Assertions.assertThat(user.getEmailAddress()).isEqualTo("mail@mail.com");
+        Assertions.assertThat(user.getBirthDate()).isEqualTo("1950-09-03");
+        Assertions.assertThat(user.getRegisteredOn()).isNotBlank();
     }
 
     @Test

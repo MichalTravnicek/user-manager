@@ -31,7 +31,8 @@ public class User {
     @Column("REGISTERED_DATE")
     private Date registeredDate = getCurrentDate();
 
-    public static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 
     private Date getCurrentDate(){
         try {

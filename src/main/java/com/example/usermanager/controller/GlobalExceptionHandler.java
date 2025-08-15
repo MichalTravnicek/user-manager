@@ -20,6 +20,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.example.usermanager.persistence.exception.ExistingUserConflict;
 import com.example.usermanager.persistence.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -33,6 +34,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 Arrays.toString(x.getValue())).collect(Collectors.joining(";"));
         var exception = new NoResourceFoundException(((ServletWebRequest) request).getHttpMethod(), parameters);
         return handleNoResourceFoundException(exception, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(ExistingUserConflict.class)
+    public ResponseEntity<Object> handleConflictException(Exception ex, WebRequest request) {
+        final ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Conflict with existing user");
+        return handleExceptionInternal(ex, detail, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(Exception.class)
@@ -71,6 +78,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public static String getExceptionMessage(Exception ex){
         return switch (ex) {
             case NoResourceFoundException e -> "";
+            case ExistingUserConflict e -> e.getMessage().contains("Detail") ? e.getMessage()
+                    .substring(e.getMessage().indexOf("Detail")) : "";
             case HandlerMethodValidationException e -> {
                 var errors = e.getParameterValidationResults().stream()
                         .map(error->error.getMethodParameter().getParameterName()+":"+ error.getResolvableErrors().getFirst()
