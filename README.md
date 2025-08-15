@@ -1,6 +1,11 @@
 # user-manager [![Java CI with Maven](https://github.com/MichalTravnicek/user-manager/actions/workflows/maven.yml/badge.svg)](https://github.com/MichalTravnicek/user-manager/actions/workflows/maven.yml)
 Simple user management with REST and Postgres using JDBC DAO
 
+
+### REST API:
+- OpenAPI/Swagger console: 
+http://localhost:8080/swagger-ui/index.html
+
 ### How to build and run:
 - App is configured with two profiles - default and "docker".
 Default profile is for launching against localhost. Docker profile is autoselected.

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.usermanager.controller.UserController.BASE_URL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,7 +41,7 @@ public class UserControllerTest {
 
     @Test
     public void shouldReturnAllUsers() throws Exception {
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get(BASE_URL + "/")).andDo(print()).andExpect(status().isOk())
                 .andDo(mvcResult -> {
                 String json = mvcResult.getResponse().getContentAsString();
                     final List<UserJson> users = convertJSONStringToList(json, UserJson.class);
