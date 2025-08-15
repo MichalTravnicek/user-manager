@@ -35,6 +35,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleNoResourceFoundException(exception, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleUnknownException(Exception ex, WebRequest request) {
+        final ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+        return handleExceptionInternal(ex, detail, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
         if (request instanceof ServletWebRequest servletWebRequest) {
@@ -52,13 +58,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             body = errorResponse.updateAndGetBody(getMessageSource(), LocaleContextHolder.getLocale());
         }
 
-        if (statusCode.equals(HttpStatus.INTERNAL_SERVER_ERROR) && body == null) {
-            request.setAttribute("jakarta.servlet.error.exception", ex, 0);
-        }
-
         if (body instanceof ProblemDetail detail){
             String exceptionMessage = getExceptionMessage(ex);
-            if (!exceptionMessage.isBlank()) {
+            if (exceptionMessage!= null && !exceptionMessage.isBlank()) {
                 detail.setProperty("exception", ex.getClass().getSimpleName());
                 detail.setProperty("message", exceptionMessage);
             }
@@ -87,7 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> createResponseEntity(@Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
         if (body instanceof ProblemDetail detail){
-            detail.setType(URI.create("User-Api"));
+            detail.setType(URI.create("UserApi-V1"));
         }
         return new ResponseEntity(body, headers, statusCode);
     }
