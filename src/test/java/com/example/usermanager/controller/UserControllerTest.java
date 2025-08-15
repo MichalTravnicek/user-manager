@@ -1,0 +1,65 @@
+package com.example.usermanager.controller;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.example.usermanager.model.rest.UserJson;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class UserControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    UserJson testUser = UserJson.builder()
+            .name("jbloch")
+            .firstName("Josh")
+            .lastName("Bloch")
+            .emailAddress("josh@email.com")
+            .birthDate("1970-08-25")
+            .registeredOn("2024-05-07")
+            .build();
+
+    @Test
+    public void shouldReturnAllUsers() throws Exception {
+        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                String json = mvcResult.getResponse().getContentAsString();
+                    final List<UserJson> users = convertJSONStringToList(json, UserJson.class);
+                    Assertions.assertThat(users).isNotNull();
+                    Assertions.assertThat(users).isNotEmpty();
+                    Assertions.assertThat(users.size()).isGreaterThan(1);
+
+                    Optional<UserJson> user = users.stream().filter(x -> x.getName().equals("jbloch")).findFirst();
+                    Assertions.assertThat(user).isPresent();
+                    Assertions.assertThat(user.get()).isEqualTo(testUser);
+            });
+
+    }
+
+    public static <T> List<T> convertJSONStringToList(String json, Class<T> objectClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        final CollectionType collectionType = TypeFactory.createDefaultInstance().constructCollectionType(List.class, objectClass);
+        return mapper.readValue(json, collectionType);
+    }
+
+}
