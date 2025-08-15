@@ -6,6 +6,9 @@ Simple user management with REST and Postgres using JDBC DAO
 - OpenAPI/Swagger console: 
 http://localhost:8080/swagger-ui/index.html
 
+<img width="3072" height="1728" alt="image" src="https://github.com/user-attachments/assets/81572ada-ffcf-44ef-a2d4-a6b491ec0833" />
+
+
 ### How to build and run:
 - App is configured with two profiles - default and "docker".
 Default profile is for launching against localhost. Docker profile is autoselected.
