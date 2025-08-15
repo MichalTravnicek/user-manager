@@ -1,16 +1,24 @@
 package com.example.usermanager.controller;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.usermanager.model.rest.UserJson;
 import com.example.usermanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,6 +39,37 @@ public class UserController {
     public List<UserJson> getAll() {
         //TODO returning all users is potential problem
         return userService.getAllUsers();
+    }
+
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found",
+                    content = @Content(schema = @Schema(example = """
+                            {
+                              "name": "mtrava",
+                              "firstName": "Michal",
+                              "lastName": "Trava",
+                              "emailAddress": "trava@seznam.cz",
+                              "birthDate": "1972-08-25",
+                              "registeredOn": "2025-05-07"
+                            }
+                            """))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)
+    })
+    @Operation(tags = "1 - Get",
+            summary = "Get user by UUID",
+            description = "Retrieves a user by unique identifier"
+    )
+    public ResponseEntity<UserJson> getUser(
+            @Parameter(examples = {
+                    @ExampleObject(name = "Existing user UUID", description = "Returns Josh user", value = "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381"),
+                    @ExampleObject(name = "Nonexistent user UUID", description = "Results in 404 NotFound", value = "b1b44b12-34bc-4ed7-a666-9657b8b8c31b"),
+                    @ExampleObject(name = "Invalid UUID", description = "Results in 400 BadRequest", value = "b1b44b12-34bc")
+            })
+            @RequestParam @org.hibernate.validator.constraints.UUID String uuid) {
+        UUID uuidObj = UUID.fromString(uuid);
+        return ResponseEntity.ok(userService.getUserById(uuidObj));
     }
 }
 

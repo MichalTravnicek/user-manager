@@ -56,6 +56,52 @@ public class UserControllerTest {
 
     }
 
+    @Test
+    public void shouldGetOneUser() throws Exception {
+        this.mockMvc.perform(get(BASE_URL + "/user").param("uuid",
+                        "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381")).andDo(print()).andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    UserJson user = convertJSONStringToObject(json, UserJson.class);
+                    Assertions.assertThat(user.getName()).isEqualTo("jbloch");
+                    Assertions.assertThat(user.getFirstName()).isEqualTo("Josh");
+                    Assertions.assertThat(user.getLastName()).isEqualTo("Bloch");
+                    Assertions.assertThat(user.getEmailAddress()).isEqualTo("josh@email.com");
+                    Assertions.assertThat(user.getBirthDate()).isEqualTo("1970-08-25");
+                    Assertions.assertThat(user.getRegisteredOn()).isEqualTo("2024-05-07");
+                });
+
+    }
+
+    @Test
+    public void shouldFailGetOneUser() throws Exception {
+        this.mockMvc.perform(get(BASE_URL + "/user").param("uuid",
+                        "deccc52a-4c7d-4f0c")).andDo(print()).andExpect(status().isBadRequest())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    public void shouldFailGetOneUser2() throws Exception {
+        this.mockMvc.perform(get(BASE_URL + "/user").param("uuid",
+                        "b1b44b12-34bc-4ed7-a666-9657b8b8c31b")).andDo(print()).andExpect(status().isNotFound())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    public static <T>  T convertJSONStringToObject(String json, Class<T> objectClass) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        return mapper.readValue(json, objectClass);
+    }
+
     public static <T> List<T> convertJSONStringToList(String json, Class<T> objectClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
