@@ -89,8 +89,12 @@ public class UsersDaoImpl implements UsersDao {
         final Map<String, Object> stringObjectMap = UsersRowMapper.mapToDatabase(user);
         final String columns = String.join("=?,", stringObjectMap.keySet()) + "=?";
         List<Object> values = new ArrayList<>(stringObjectMap.values().stream().toList());
-        values.add(user.getEmail());
-        return jdbcTemplate.update("UPDATE USERS SET " + columns + " WHERE email=?", values.toArray());
+        values.add(user.getUuid());
+        try {
+            return jdbcTemplate.update("UPDATE USERS SET " + columns + " WHERE uuid=?", values.toArray());
+        } catch (DuplicateKeyException e) {
+            throw new ExistingUserConflict(e.getMessage());
+        }
     }
 
     @Override

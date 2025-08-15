@@ -120,6 +120,15 @@ public class UsersDaoTest {
     }
 
     @Test
+    public void shouldFailUpdateUser() {
+        final User user = usersDao.getOne(1);
+        user.setFirstName("Michal");
+        user.setLastName("Trava");
+        user.setEmail("jrotten@email.com");
+        assertThrows(ExistingUserConflict.class, () -> usersDao.updateOne(user));
+    }
+
+    @Test
     public void shouldDeleteByEmail() {
         final User user = usersDao.getOne(1);
         Assertions.assertThat(user).isNotNull();

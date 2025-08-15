@@ -7,6 +7,7 @@ import java.util.Optional;
 import static com.example.usermanager.controller.UserController.BASE_URL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -170,6 +171,69 @@ public class UserControllerTest {
                           "emailAddress": "pepa@mail.com",
                           "birthDate": "08-25-1970",
                           "registeredOn": "05-07-2022"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldUpdateUser() throws Exception {
+        this.mockMvc.perform(put(BASE_URL + "/user").content("""
+                        {
+                          "uuid" : "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381",
+                          "name": "pzdepa",
+                          "firstName": "Pepa",
+                          "lastName": "ZDepa",
+                          "emailAddress": "pepa@mail.com",
+                          "birthDate": "1970-08-25",
+                          "registeredOn": "2022-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isNoContent())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailUpdateUser() throws Exception { //conflicting email
+        this.mockMvc.perform(put(BASE_URL + "/user").content("""
+                        {
+                          "uuid" : "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381",
+                          "name": "pzdepa",
+                          "firstName": "Pepa",
+                          "lastName": "ZDepa",
+                          "emailAddress": "jrotten@email.com",
+                          "birthDate": "1970-08-25",
+                          "registeredOn": "2022-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isConflict())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldFailUpdateUser2() throws Exception {
+        this.mockMvc.perform(put(BASE_URL + "/user").content("""
+                        {
+                          "uuid" : "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381",
+                          "name": "pzdepaaaaaaaaaaaaaaaaaaaaaaa",
+                          "firstName": "Pepa",
+                          "lastName": "ZDepa",
+                          "emailAddress": "foo@email.com",
+                          "birthDate": "1970-08-25",
+                          "registeredOn": "2022-05-07"
                         }
                         """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
                 .andDo(mvcResult -> {

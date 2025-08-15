@@ -1,5 +1,7 @@
 package com.example.usermanager.model.rest;
 
+import org.hibernate.validator.constraints.UUID;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +18,7 @@ public class UserJson {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
+    @UUID
     private String uuid;
     @NotNull
     @Size(min = 4, max = 8)

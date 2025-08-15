@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -112,6 +113,38 @@ public class UserController {
             @RequestBody @Valid UserJson user) {
         final UserJson createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+    @PutMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(tags = "3 - Update",
+            summary = "Update user",
+            description = "Updates user from supplied values"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User updated", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request/Not found", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflict with existing user", content = @Content)
+    })
+    public ResponseEntity<UserJson> updateUser(
+            @Schema(implementation = UserJson.class, example = """
+                            {
+                              "uuid": "f6e4208f-5df4-466e-9225-01f296e2a09c",
+                              "name": "pbobek",
+                              "firstName": "Pavel",
+                              "lastName": "Bobek",
+                              "emailAddress": "pbob@seznam.cz",
+                              "birthDate": "1971-08-20",
+                              "registeredOn": "2024-08-07"
+                            }
+                            """)
+            @RequestBody @Valid UserJson user) {
+        boolean updateResult = userService.updateUser(user);
+        if (updateResult) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
 }
