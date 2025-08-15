@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import com.example.usermanager.model.User;
+import com.example.usermanager.persistence.exception.ExistingUserConflict;
 import com.example.usermanager.persistence.exception.NotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -72,10 +73,39 @@ public class UsersDaoTest {
         Assertions.assertThat(createdUser).isNotNull();
         Assertions.assertThat(createdUser.getId()).isNotNull();
         Assertions.assertThat(createdUser.getId()).isGreaterThan(0);
+        Assertions.assertThat(createdUser.getUuid()).isNotNull();
+        Assertions.assertThat(createdUser.getName()).isEqualTo("purban");
+        Assertions.assertThat(createdUser.getFirstName()).isEqualTo("Pavel");
+        Assertions.assertThat(createdUser.getLastName()).isEqualTo("Urbanek");
+        Assertions.assertThat(createdUser.getEmail()).isNotNull();
+        Assertions.assertThat(createdUser.getEmail()).isEqualTo("pavel@seznam.cz");
         Assertions.assertThat(createdUser).extracting(User::getBirthDate).isNotNull();
+        Assertions.assertThat(createdUser).extracting(User::getBirthDate).isEqualTo(User.dateFormatter.parse("2007-09-07"));
         Assertions.assertThat(createdUser).extracting(User::getRegisteredDate).isNotNull();
         final User userFound = usersDao.getOne(user.getId());
         Assertions.assertThat(userFound).isEqualTo(user);
+    }
+
+    @Test
+    public void shouldFailCreateUser() throws ParseException {
+        User user = new User();
+        user.setName("jbloch"); //duplicated name
+        user.setFirstName("Jindra");
+        user.setLastName("Bloch");
+        user.setEmail("jb@seznam.cz");
+        user.setBirthDate(User.dateFormatter.parse("2007-09-07"));
+        assertThrows(ExistingUserConflict.class, () -> usersDao.createOne(user));
+    }
+
+    @Test
+    public void shouldFailCreateUser2() throws ParseException {
+        User user = new User();
+        user.setName("pbloch");
+        user.setFirstName("Petr");
+        user.setLastName("Bloch");
+        user.setEmail("josh@email.com"); // duplicated email
+        user.setBirthDate(User.dateFormatter.parse("2007-09-07"));
+        assertThrows(ExistingUserConflict.class, () -> usersDao.createOne(user));
     }
 
     @Test

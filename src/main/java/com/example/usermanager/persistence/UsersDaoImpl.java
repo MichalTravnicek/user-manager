@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.usermanager.model.User;
+import com.example.usermanager.persistence.exception.ExistingUserConflict;
 import com.example.usermanager.persistence.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -58,21 +60,25 @@ public class UsersDaoImpl implements UsersDao {
         final String columns = String.join(",", stringObjectMap.keySet());
         List<Object> values = new ArrayList<>(stringObjectMap.values().stream().toList());
         String placeholders = columns.replaceAll("\\w+","?");
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement("INSERT INTO USERS (" + columns + ") VALUES (" + placeholders + ")",
-                            Statement.RETURN_GENERATED_KEYS);
-            for (int i = 1; i <= values.size(); i++) {
-                final Object value = values.get(i - 1);
-                if (value instanceof Date){
-                    ps.setDate(i, new java.sql.Date(((Date) value).getTime()));
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection
+                        .prepareStatement("INSERT INTO USERS (" + columns + ") VALUES (" + placeholders + ")",
+                                Statement.RETURN_GENERATED_KEYS);
+                for (int i = 1; i <= values.size(); i++) {
+                    final Object value = values.get(i - 1);
+                    if (value instanceof Date){
+                        ps.setDate(i, new java.sql.Date(((Date) value).getTime()));
+                    }
+                    else {
+                        ps.setObject(i, value);
+                    }
                 }
-                else {
-                    ps.setObject(i, value);
-                }
-            }
-            return ps;
-        }, keyHolder);
+                return ps;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new ExistingUserConflict(e.getMessage());
+        }
 
         final Map<String, Object> keys = keyHolder.getKeys();
         return UsersRowMapper.addUserIds(user, keys);
