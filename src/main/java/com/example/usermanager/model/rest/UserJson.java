@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.UUID;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class UserJson {
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
     @UUID
+    @Null(groups = CreateUser.Group.class)
     private String uuid;
     @NotNull
     @Size(min = 4, max = 8)

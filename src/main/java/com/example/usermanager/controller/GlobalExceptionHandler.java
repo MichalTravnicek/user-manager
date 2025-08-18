@@ -88,7 +88,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             }
             case MethodArgumentNotValidException e -> {
                 var errors = e.getBindingResult().getFieldErrors().stream().map(
-                        error -> error.getRejectedValue()+":"+error.getDefaultMessage()).toList();
+                        error -> error.getField() + "=" + error.getRejectedValue() + ":" + error.getDefaultMessage()).toList();
                 yield errors.toString();
             }
             case Exception e -> e.getMessage(); // in production we can suppress that (ie. internal exception)

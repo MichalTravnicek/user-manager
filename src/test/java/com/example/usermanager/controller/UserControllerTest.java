@@ -183,6 +183,27 @@ public class UserControllerTest {
 
     @Test
     @Transactional
+    public void shouldFailCreateUser4() throws Exception {// specifying UUID is not allowed
+        this.mockMvc.perform(post(BASE_URL + "/user").content("""
+                        {
+                          "uuid" : "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381",
+                          "name": "mtrava",
+                          "firstName": "Michal",
+                          "lastName": "Trava",
+                          "emailAddress": "trava@seznam.cz",
+                          "birthDate": "1972-08-25",
+                          "registeredOn": "2025-05-07"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isBadRequest())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                });
+
+    }
+
+    @Test
+    @Transactional
     public void shouldUpdateUser() throws Exception {
         this.mockMvc.perform(put(BASE_URL + "/user").content("""
                         {
@@ -269,6 +290,7 @@ public class UserControllerTest {
     @Transactional
     public void shouldDeleteUser() throws Exception {
         this.mockMvc.perform(delete(BASE_URL + "/user").param("uuid", "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381")
+                        .param("aa","bb")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isNoContent())
                 .andDo(mvcResult -> {
                     String json = mvcResult.getResponse().getContentAsString();

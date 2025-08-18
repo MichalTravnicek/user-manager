@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.usermanager.model.rest.CreateUser;
 import com.example.usermanager.model.rest.UserJson;
 import com.example.usermanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -111,7 +113,7 @@ public class UserController {
                               "registeredOn": "2025-05-07"
                             }
                             """)
-            @RequestBody @Valid UserJson user) {
+            @RequestBody @Validated(CreateUser.class) UserJson user) {
         final UserJson createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
