@@ -3,6 +3,7 @@ Simple user management with REST and Postgres using JDBC DAO
 
 
 ### REST API:
+- View complete API Docs [here](docs/RestAPI.md)
 - OpenAPI/Swagger console: 
 http://localhost:8080/swagger-ui/index.html
 
