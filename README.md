@@ -17,6 +17,7 @@ Default profile is for launching against localhost. Docker profile is autoselect
 So that lifecycle of database is decoupled from application.
 - For application to build and run Postgres database must be present - localhost or docker.
 Application compose performs build with tests and then runs jar 
+- See docs about data management [here](docs/DataManagement.md)
 
 #### Database:
 
