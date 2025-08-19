@@ -81,6 +81,23 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(uuidObj));
     }
 
+    @PostMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(tags = "1 - Get",
+            summary = "Search for users",
+            description = "Search for users parameters using fuzzy matching"
+    )
+    public ResponseEntity<List<UserJson>> searchUsers(
+            @Schema(implementation = UserJson.class, example = """
+                            {
+                              "firstName": "Johny",
+                              "emailAddress": "%seznam.cz"
+                            }
+                            """)
+            @RequestBody UserJson parameters
+    ){
+        return ResponseEntity.ok(userService.getUsersByParams(parameters));
+    }
+
     @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(tags = "2 - Create",
             summary = "Create user",

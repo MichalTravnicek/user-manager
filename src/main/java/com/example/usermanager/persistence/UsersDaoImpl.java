@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -50,6 +51,18 @@ public class UsersDaoImpl implements UsersDao {
             return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE uuid= ?", new UsersRowMapper(), uuid);
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException(ex);
+        }
+    }
+
+    @Override
+    public List<User> searchByFuzzy(Map<String,String> parameters) {
+        final String columns = parameters.keySet().stream().map(x -> x + "::text LIKE ?")
+                .collect(Collectors.joining(" AND "));
+        List<Object> values = new ArrayList<>(parameters.values());
+        try {
+            return jdbcTemplate.query("SELECT * FROM USERS WHERE " + columns, new UsersRowMapper(), values.toArray());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(e);
         }
     }
 

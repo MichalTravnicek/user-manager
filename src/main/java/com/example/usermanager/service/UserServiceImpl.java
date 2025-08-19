@@ -64,4 +64,11 @@ public class UserServiceImpl implements UserService {
 		return EntityMapper.INSTANCE.mapToJson(users);
 	}
 
+	@Override
+	public List<UserJson> getUsersByParams(UserJson params){
+		var converted = EntityMapper.INSTANCE.mapParameters(params);
+		List<User> users = usersDao.searchByFuzzy(converted);
+		return EntityMapper.INSTANCE.mapToJson(users);
+	}
+
 }

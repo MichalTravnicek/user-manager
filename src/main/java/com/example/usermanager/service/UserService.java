@@ -22,4 +22,7 @@ public interface UserService {
     boolean deleteUserById(UUID uuid);
 
     List<UserJson> getAllUsers();
+
+    List<UserJson> getUsersByParams(UserJson params);
+
 }

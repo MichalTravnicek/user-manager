@@ -40,7 +40,7 @@ Users REST API is based on UserJson entity with following fields:
 
 
 -   **GET `/api/v1/users/user?uuid={id}`**: Retrieves a user by UUID.
-    -   Example Request: `/api/users/user?uuid=deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381`
+    -   Example Request: `/api/v1/users/user?uuid=deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381`
     -   Example Response:
         ```json
         {
@@ -56,6 +56,32 @@ Users REST API is based on UserJson entity with following fields:
     -   Response Status: 200 (OK) - User found
     -   Response Status: 400 (Bad request) - Bad request
     -   Response Status: 404 (Not found) - User not found
+
+
+-   **POST `/api/v1/users/search`**: Search users by parameters.
+    -   Add filter parameters. For fuzzy matching use **%** wildcard. 
+    -   Example Request Body:
+        ```json
+        {      
+          "name": "j%",
+          "firstName": "Johny",
+          "emailAddress": "%seznam%",
+          "registeredOn": "2024-03%"
+        }
+        ```
+    -   Example Response:
+        ```json
+        {
+          "uuid": "df0049e2-c7fa-4ad7-a43a-79a168f1e8e3",
+          "name": "jstohan",
+          "firstName": "Johny",
+          "lastName": "Stohandl",
+          "emailAddress": "jstohand@seznam.cz",
+          "birthDate": "1972-01-12",
+          "registeredOn": "2024-03-02"
+        }
+        ```
+    -   Response Status: 200 (OK) - List of users
 
 ### 2. CREATE
 

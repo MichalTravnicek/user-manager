@@ -2,6 +2,7 @@ package com.example.usermanager.persistence;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
@@ -176,6 +177,22 @@ public class UsersDaoTest {
             Assertions.assertThat(user).isNotNull();
             Assertions.assertThat(user).extracting(User::getFirstName).isNotNull();
             Assertions.assertThat(user).extracting(User::getLastName).isNotNull();
+        }
+    }
+
+    @Test
+    public void shouldSearchUsersByParameters() throws ParseException {
+        final List<User> allUsers = usersDao.searchByFuzzy(Map.of("name","j%","first_name","Johny","email","%email.com"));
+        Assertions.assertThat(allUsers).isNotNull();
+        Assertions.assertThat(allUsers).size().isEqualTo(1);
+        for (final User user : allUsers) {
+            Assertions.assertThat(user).isNotNull();
+            Assertions.assertThat(user.getUuid().toString()).isEqualTo("2cee318f-4344-429c-9476-6484ef6e276c");
+            Assertions.assertThat(user).extracting(User::getFirstName).isEqualTo("Johny");
+            Assertions.assertThat(user).extracting(User::getLastName).isEqualTo("Rotten");
+            Assertions.assertThat(user).extracting(User::getEmail).isEqualTo("jrotten@email.com");
+            Assertions.assertThat(user).extracting(User::getBirthDate).isEqualTo(User.dateFormatter.parse("1935-02-15"));
+            Assertions.assertThat(user).extracting(User::getRegisteredDate).isEqualTo(User.dateFormatter.parse("2024-04-27"));
         }
     }
 

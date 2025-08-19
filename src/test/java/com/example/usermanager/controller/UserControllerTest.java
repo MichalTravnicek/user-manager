@@ -102,6 +102,46 @@ public class UserControllerTest {
     }
 
     @Test
+    public void shouldSearchUsers() throws Exception {
+        this.mockMvc.perform(post(BASE_URL + "/search").content("""
+                        {
+                          "firstName": "Johny",
+                          "emailAddress": "%seznam.cz"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                    final List<UserJson> users = convertJSONStringToList(json, UserJson.class);
+                    Assertions.assertThat(users).isNotEmpty();
+                    Assertions.assertThat(users).size().isEqualTo(1);
+                    Assertions.assertThat(users.getFirst()).extracting(UserJson::getUuid)
+                            .isEqualTo("df0049e2-c7fa-4ad7-a43a-79a168f1e8e3");
+                });
+
+    }
+
+    @Test
+    public void shouldSearchUsers2() throws Exception {
+        this.mockMvc.perform(post(BASE_URL + "/search").content("""
+                        {
+                          "emailAddress": "%email.com",
+                          "registeredOn": "2024%"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                    String json = mvcResult.getResponse().getContentAsString();
+                    System.out.println(json);
+                    final List<UserJson> users = convertJSONStringToList(json, UserJson.class);
+                    Assertions.assertThat(users).isNotEmpty();
+                    Assertions.assertThat(users).size().isEqualTo(2);
+                    Assertions.assertThat(users).extracting(UserJson::getUuid).containsExactlyInAnyOrder(
+                            "deccc52a-4c7d-4f0c-9ba9-e12b6dd3c381", "2cee318f-4344-429c-9476-6484ef6e276c");
+                });
+
+    }
+
+    @Test
     @Transactional
     public void shouldCreateUser() throws Exception {
         this.mockMvc.perform(post(BASE_URL + "/user").content("""
